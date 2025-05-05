@@ -53,13 +53,23 @@ const Account = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.btn}
-            onPress={() =>
-              navigation.navigate("adminPanel", { id: user?._id })
-            }
+            onPress={() => navigation.navigate("addresses")}
           >
-            <AntDesign style={styles.btnText} name="windows" />
-            <Text style={styles.btnText}>Admin Panel</Text>
+            <AntDesign style={styles.btnText} name="edit" />
+            <Text style={styles.btnText}>Addresses</Text>
           </TouchableOpacity>
+          {user?.role === "admin" && (
+            <TouchableOpacity
+              style={styles.btn}
+              onPress={() =>
+                navigation.navigate("adminPanel", { id: user?._id })
+              }
+            >
+              <AntDesign style={styles.btnText} name="windows" />
+              <Text style={styles.btnText}>Admin Panel</Text>
+            </TouchableOpacity>
+          )}
+          
         </View>
       </View>
     </Layout>

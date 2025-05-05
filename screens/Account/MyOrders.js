@@ -19,7 +19,6 @@ const MyOrders = () => {
           }
         );
         const data = await response.json();
-        console.log(data.orders);
         if (response.ok) {
           setOrders(data.orders);
         } else {

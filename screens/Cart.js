@@ -14,11 +14,15 @@ import Cartitem from "../components/cart/CartItem";
 
 const Cart = ({ navigation }) => {
   const [cartItems, setCartItems] = useState([]);
-
+  const [addresses, setAddresses] = useState([]);
+  
   useEffect(() => {
     const loadCartFromStorage = async () => {
       try {
         const cartData = await AsyncStorage.getItem('cart');
+        const addresses =await AsyncStorage.getItem("addresses");
+        const parsedAddresses = addresses ? JSON.parse(addresses) : [];
+        setAddresses(parsedAddresses);
         if (cartData) {
           const parsedCart = JSON.parse(cartData);
           const detailedCart = await Promise.all(
@@ -67,8 +71,8 @@ const Cart = ({ navigation }) => {
       {cartItems?.length > 0 && (
         <>
           <ScrollView>
-            {cartItems?.map((item) => (
-              <Cartitem item={item.product} quantity={item.qty} key={item.product.id} />
+            {cartItems?.map((item, index) => (
+              <Cartitem item={item.product} quantity={item.qty} key={`${item.product.id}-${index}`} />
             ))}
           </ScrollView>
           <View>
@@ -76,8 +80,25 @@ const Cart = ({ navigation }) => {
             <PriceTable title={"Tax"} price={cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0)/10} />
             <PriceTable title={"Shipping"} price={10} />
             <View style={styles.grandTotal}>
-              <PriceTable title={"Grand Total"} price={cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0)*110/100 + 10} />
+              <PriceTable title={"Total"} price={cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0)*110/100 + 10} />
             </View>
+            <View style={{ marginTop: 20, padding: 10, backgroundColor: '#f9f9f9', borderRadius: 10, borderWidth: 1, borderColor: '#ddd' }}>
+              <TouchableOpacity onPress={() => navigation.navigate('addresses')} style={{ alignItems: 'center' }}>
+                <Text style={{ textAlign: "center", fontSize: 18, fontWeight: "bold", color: '#333' }}>
+                  Address:
+                </Text>
+                <Text style={{ textAlign: "center", fontSize: 16, color: '#555', marginTop: 5 }}>
+                  {addresses[0]?.address}
+                </Text>
+                <Text style={{ textAlign: "center", fontSize: 16, color: '#555' }}>
+                  {addresses[0]?.name}
+                </Text>
+                <Text style={{ textAlign: "center", fontSize: 16, color: '#555' }}>
+                  {addresses[0]?.phone}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
             <TouchableOpacity
               style={styles.btnCheckout}
               onPress={navigateToCheckout}
@@ -102,7 +123,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     padding: 5,
     margin: 5,
-    marginHorizontal: 20,
+    // marginHorizontal: 20,
+    // flexDirection: "row",
+    justifyContent: "space-between",
+    // paddingHorizontal: 30,
+    // alignItems: "center",
   },
   btnCheckout: {
     marginTop: 20,

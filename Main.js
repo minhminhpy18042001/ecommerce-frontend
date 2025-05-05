@@ -20,6 +20,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CategoryScreen from "./screens/Category";
+import SearchScreen from "./screens/Search";
+import Address from "./screens/Account/Address";
 
 //routes
 const Stack = createNativeStackNavigator();
@@ -58,7 +60,8 @@ export default function Main() {
           <Stack.Screen name="cart" component={Cart} />
           <Stack.Screen name="mobile" component={About} />
           <Stack.Screen name="category" component={CategoryScreen} />
-
+          <Stack.Screen name="search" component={SearchScreen} />
+          <Stack.Screen name="addresses" component={Address} />
           {!isAuth && (
             <>
               <Stack.Screen

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "../redux/features/auth/userActions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -7,7 +7,8 @@ import Layout from "../components/Layout/Layout";
 
 const Checkout = ({ navigation, route }) => {
   const { cartItems } = route.params;
-
+  const [address,setAddress] = useState([]);
+  
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
@@ -36,6 +37,11 @@ const Checkout = ({ navigation, route }) => {
 
   const handleCheckout = async () => {
     try {
+      const addresses = await AsyncStorage.getItem('addresses');
+      const parsedAddresses = addresses ? JSON.parse(addresses) : [];
+      console.log(parsedAddresses);
+      setAddress(parsedAddresses); // Update state for future use
+
       const response = await fetch('https://ecommerce-v1-wswg.onrender.com/api/v1/order/create', {
         method: 'POST',
         headers: {
@@ -43,9 +49,9 @@ const Checkout = ({ navigation, route }) => {
         },
         body: JSON.stringify({
           shippingInfo: {
-            address: '123 Main St',
-            city: 'New York',
-            country: 'USA',
+            address: parsedAddresses[0]?.address || 'so 1 vo van ngan, hcm, VN',
+            city: parsedAddresses[0]?.name || 'Tuyen',
+            country: parsedAddresses[0]?.phone || '091263465',
           },
           orderItems: cartItems.map(item => ({
             name: item.product.name,
@@ -57,9 +63,9 @@ const Checkout = ({ navigation, route }) => {
           paymentMethod: 'COD',
           user: user?._id, // Replace with actual user ID
           itemPrice: cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0),
-          tax: cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0)/105, // Example tax value
+          tax: cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0) / 105, // Example tax value
           shippingCharges: 10, // Example shipping charge
-          totalAmount: cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0)*110/100 + 10,
+          totalAmount: cartItems.reduce((acc, item) => acc + item.product.price * item.qty, 0) * 110 / 100 + 10,
         }),
       });
 

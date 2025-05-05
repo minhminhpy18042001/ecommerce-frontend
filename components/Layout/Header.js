@@ -7,12 +7,15 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useNavigation } from "@react-navigation/native";
 const Header = () => {
   const [searchText, setSearchText] = useState("");
+  const navigation = useNavigation();
   //funciotn for search
   const handleSearch = () => {
-    console.log(searchText);
-    setSearchText("");
+    navigation.navigate("search", {
+      searchText: searchText,
+    });
   };
   return (
     <View

@@ -4,21 +4,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProducts } from "../redux/features/products/productsActions";
 import ProductsCard from "../components/Products/ProductsCard";
 import Layout from "../components/Layout/Layout";
-const CategoryScreen = ({ route }) => {
-  const { category } = route.params;
+const SearchScreen = ({ route }) => {
+  const { searchText } = route.params;
   const dispatch = useDispatch();
   const { products, loading } = useSelector((state) => state.products);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
-
-  let filteredProducts = products.filter(
-    (product) => product.category._id === category
-    
+  console.log("products", products[0]);
+  console.log("searchText", searchText);
+  const filteredProducts = products?.filter(
+    (product) =>
+      product.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.category?.type?.toLowerCase().includes(searchText.toLowerCase()) ||
+      product.price?.toString().includes(searchText.toLowerCase())
   );
+
   if (filteredProducts.length === 0) {
-    filteredProducts =products;
+    return <Text>No products found </Text>;
   }
   if (loading) {
     return <Text>Loading...</Text>;
@@ -62,4 +67,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CategoryScreen;
+export default SearchScreen;

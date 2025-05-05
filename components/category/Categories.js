@@ -18,7 +18,7 @@ const Categories = () => {
           <View key={item._id}>
             <TouchableOpacity
               style={styles.catContainer}
-              // onPress={() => navigation.navigate(item.path)}
+               onPress={() => navigation.navigate("category", { category: item._id })}
             >
               {/* <AntDesign name={item.icon} style={styles.catIcon} /> */
               <Text></Text>}

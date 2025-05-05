@@ -13,6 +13,7 @@ import { userData } from "../../data/userData";
 import InputBox from "../../components/Form/InputBox";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "../../redux/features/auth/userActions";
+import axios from "axios";
 
 const Profile = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -32,14 +33,35 @@ const Profile = ({ navigation }) => {
   const [contact, setContact] = useState(user?.phone || "");
 
   //   update profile
-  const handleUpdate = () => {
-    if (!email || !password || !name || !address || !city || !contact) {
+  const handleUpdate = async () => {
+    if (!email || !name || !address || !city || !contact) {
       return alert("Please provide all fields");
     }
-    alert("profile update Successfully");
-    navigation.navigate("account");
-  };
 
+    try {
+      const response = await axios.put(
+        "https://ecommerce-v1-wswg.onrender.com/api/v1/user/profile-update",
+        {
+          name,
+          email,
+          address,
+          city,
+          country: "VN", // Add country if needed
+          phone: contact,
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Profile updated successfully");
+        navigation.navigate("account");
+      } else {
+        alert("Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating the profile");
+    }
+  };
 
   return (
     <Layout>
@@ -62,13 +84,6 @@ const Profile = ({ navigation }) => {
             setValue={setEamil}
             placeholder={"enter you email"}
             autoComplete={"email"}
-          />
-          <InputBox
-            value={password}
-            setValue={setPassword}
-            placeholder={"enter you password"}
-            autoComplete={"password"}
-            secureTextEntry={true}
           />
           <InputBox
             value={address}

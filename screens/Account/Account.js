@@ -58,6 +58,13 @@ const Account = ({ navigation }) => {
             <AntDesign style={styles.btnText} name="edit" />
             <Text style={styles.btnText}>Addresses</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.btn}
+            onPress={() => navigation.navigate("wishlist")}
+          >
+            <AntDesign style={styles.btnText} name="heart" />
+            <Text style={styles.btnText}>Wishlist</Text>
+          </TouchableOpacity>
           {user?.role === "admin" && (
             <TouchableOpacity
               style={styles.btn}

@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CategoryScreen from "./screens/Category";
 import SearchScreen from "./screens/Search";
 import Address from "./screens/Account/Address";
+import Wishlist from "./screens/Wishlist";
 
 //routes
 const Stack = createNativeStackNavigator();
@@ -62,6 +63,7 @@ export default function Main() {
           <Stack.Screen name="category" component={CategoryScreen} />
           <Stack.Screen name="search" component={SearchScreen} />
           <Stack.Screen name="addresses" component={Address} />
+          <Stack.Screen name="wishlist" component={Wishlist} />
           {!isAuth && (
             <>
               <Stack.Screen

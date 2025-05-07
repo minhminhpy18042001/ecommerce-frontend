@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/Layout/Layout";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome for icons
 
 const ProductDetails = ({ route }) => {
   const [pDetails, setPDetails] = useState({});
   const [qty, setQty] = useState(1);
+  const [wishlist, setWishlist] = useState([]);
   const { params } = route;
 
   // Fetch product details from API
@@ -21,6 +23,14 @@ const ProductDetails = ({ route }) => {
     };
     fetchProductDetails();
   }, [params?._id]);
+
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      const wishlistData = await AsyncStorage.getItem('wishlist');
+      setWishlist(wishlistData ? JSON.parse(wishlistData) : []);
+    };
+    fetchWishlist();
+  }, []);
 
   // Handle function for + -
   const handleAddQty = () => {
@@ -56,6 +66,24 @@ const ProductDetails = ({ route }) => {
     }
   };
 
+  const saveToWishlist = async (id) => {
+    try {
+      const wishlistData = await AsyncStorage.getItem('wishlist');
+      const wishlist = wishlistData ? JSON.parse(wishlistData) : [];
+
+      // Check if the item already exists in the wishlist
+      if (!wishlist.includes(id)) {
+        wishlist.push(id);
+        await AsyncStorage.setItem('wishlist', JSON.stringify(wishlist));
+        alert('Item added to wishlist');
+      } else {
+        alert('Item is already in the wishlist');
+      }
+    } catch (error) {
+      console.error('Error saving to wishlist:', error);
+    }
+  };
+
   return (
     <Layout>
       <Image source={{ uri: Array.isArray(pDetails?.images) && pDetails.images[0]?.url || "https://montagnedellaluna.coffee/wp-content/uploads/2025/03/1882-29-.webp" }} style={styles.image} />
@@ -75,6 +103,25 @@ const ProductDetails = ({ route }) => {
             <Text style={styles.btnCartText}>
               {pDetails?.stock > 0 ? "ADD TO CART" : "OUT OF STOCK"}
             </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={async () => {
+              const wishlistData = await AsyncStorage.getItem('wishlist');
+              const wishlist = wishlistData ? JSON.parse(wishlistData) : [];
+
+              if (wishlist.includes(params?._id)) {
+                const updatedWishlist = wishlist.filter(item => item !== params?._id);
+                await AsyncStorage.setItem('wishlist', JSON.stringify(updatedWishlist));
+                alert('Item removed from wishlist');
+              } else {
+                wishlist.push(params?._id);
+                await AsyncStorage.setItem('wishlist', JSON.stringify(wishlist));
+                alert('Item added to wishlist');
+              }
+            }}
+            style={styles.wishlistIcon}
+          >
+            <FontAwesome name="heart" size={24} color={wishlist?.includes(params?._id) ? "red" : "gray"} />
           </TouchableOpacity>
           <View style={styles.btnContainer}>
             <TouchableOpacity style={styles.btnQty} onPress={handleRemoveQty}>
@@ -138,6 +185,11 @@ const styles = StyleSheet.create({
   },
   btnQtyText: {
     fontSize: 20,
+  },
+  wishlistIcon: {
+    marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 export default ProductDetails;
